@@ -31,10 +31,11 @@ void ASWeaponInstant::FireWeapon()
 	float low = 0, high = 0;
 
 	// If we haven't shot before or it's been greater than 500ms
+	// then add just a small amount of drift
 	if (last_fired_time == -1 || (time_now - last_fired_time) >= 500 ) {
 		last_fired_time = time_now;
 		low = 0;
-		high = 0;
+		high = 255;
 	}
 
 	// else we have shot within the last 500ms and we want to add bullet spread

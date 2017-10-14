@@ -36,6 +36,8 @@ class SURVIVALGAME_API ASHUD : public AHUD
 	
 	void DrawCenterDot();
 
+	void DrawRandom();
+
 public:
 
 	UFUNCTION(BlueprintCallable, Category = "HUD")
