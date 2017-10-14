@@ -24,7 +24,7 @@ ASGameMode::ASGameMode(const FObjectInitializer& ObjectInitializer)
 	GameStateClass = ASGameState::StaticClass();
 	SpectatorClass = ASSpectatorPawn::StaticClass();
 
-	bAllowFriendlyFireDamage = false;
+	bAllowFriendlyFireDamage = true;
 	bSpawnZombiesAtNight = true;
 
 	/* Start the game at 16:00 */

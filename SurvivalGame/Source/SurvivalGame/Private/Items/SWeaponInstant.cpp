@@ -5,7 +5,12 @@
 #include "SImpactEffect.h"
 #include "SPlayerController.h"
 #include "SDamageType.h"
+#include <ctime>
 
+long double last_fired_time = -1;
+bool previously_fired = false;
+
+float BULLET_SPREAD_HIGH = 1024, BULLET_SPREAD_LOW = 0;
 
 ASWeaponInstant::ASWeaponInstant(const class FObjectInitializer& PCIP)
 	: Super(PCIP)
@@ -21,10 +26,41 @@ ASWeaponInstant::ASWeaponInstant(const class FObjectInitializer& PCIP)
 
 
 void ASWeaponInstant::FireWeapon()
-{	
+{
+	long double time_now = time(0) * 1000;
+	float low = 0, high = 0;
+
+	// If we haven't shot before or it's been greater than 500ms
+	if (last_fired_time == -1 || (time_now - last_fired_time) >= 500 ) {
+		last_fired_time = time_now;
+		low = 0;
+		high = 0;
+	}
+
+	// else we have shot within the last 500ms and we want to add bullet spread
+	else {
+		low = BULLET_SPREAD_HIGH;
+		high = BULLET_SPREAD_LOW;
+	}
+	
+	int random_up = rand() % 2, random_right = rand() % 2;
+	float bullet_spread_up = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
+	float bullet_spread_right = low + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (high - low)));
+
+	if (random_right) {
+		bullet_spread_right = -bullet_spread_right;
+	}
+
+	if (random_up) {
+		bullet_spread_up = -bullet_spread_up;
+	}
+
+	// Determine aim direction and bullet spread
 	const FVector AimDir = GetAdjustedAim();
 	const FVector CameraPos = GetCameraDamageStartLocation(AimDir);
-	const FVector EndPos = CameraPos + (AimDir * WeaponRange);
+
+	// FVector (right, nothing, up)
+	const FVector EndPos = CameraPos + (AimDir * WeaponRange) + FVector(bullet_spread_right, 0, bullet_spread_up);
 
 	/* Check for impact by tracing from the camera position */
 	FHitResult Impact = WeaponTrace(CameraPos, EndPos);
@@ -47,6 +83,8 @@ void ASWeaponInstant::FireWeapon()
 	}
 
 	ProcessInstantHit(Impact, MuzzleOrigin, AdjustedAimDir);
+
+	previously_fired = true;
 }
 
 

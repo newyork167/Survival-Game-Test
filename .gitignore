@@ -16,3 +16,6 @@ SurvivalGame/Releases
 *.target
 *.modules
 *.opendb
+/SurvivalGame/Binaries/Win64
+/SurvivalGame/Output
+/SurvivalGame/SurvivalGame.VC.db
